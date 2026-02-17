@@ -1,0 +1,17 @@
+// localhost:3000/api/demo/blocking
+
+import { inngest } from "@/inngest/client";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { generateText } from "ai";
+
+const google = createGoogleGenerativeAI();
+
+export async function POST() {
+  await inngest.send({
+    name: "demo/generate",
+    data: {},
+  });
+  return Response.json({
+    status: "started",
+  });
+}
