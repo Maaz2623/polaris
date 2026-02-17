@@ -2,8 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import * as Sentry from "@sentry/nextjs";
+import { useAuth } from "@clerk/nextjs";
 
 const DemoPage = () => {
+  const { userId } = useAuth();
+
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
 
@@ -13,6 +17,23 @@ const DemoPage = () => {
       method: "POST",
     });
     setLoading(false);
+  };
+
+  const handleClientError = () => {
+    Sentry.logger.info("User clicked on client function.", { userId });
+    throw new Error("Client error something went wrong in the browser.");
+  };
+
+  const handleApiError = async () => {
+    await fetch(`/api/demo/error`, {
+      method: "POST",
+    });
+  };
+
+  const handleInngestError = async () => {
+    await fetch(`/api/demo/inngest-error`, {
+      method: "POST",
+    });
   };
 
   const handleBackground = async () => {
@@ -31,6 +52,9 @@ const DemoPage = () => {
       <Button disabled={loading2} onClick={handleBackground}>
         {loading2 ? "Loading" : "Background"}
       </Button>
+      <Button onClick={handleClientError}>Client Error</Button>
+      <Button onClick={handleApiError}>API Error</Button>
+      <Button onClick={handleInngestError}>Inngest Error Error</Button>
     </div>
   );
 };
