@@ -1,6 +1,14 @@
-import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Doc } from "../../../../../convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
+import { getItemPadding } from "./constants";
 
 export const TreeItemWrapper = ({
   item,
@@ -38,10 +46,40 @@ export const TreeItemWrapper = ({
             }
           }}
           className={cn(
-            "group flex items-center gap-1 w-full h-5.5 hover:bg-accent/30 outline-none focus:ring-1 focus:ring-inset focus:ring-ring"
+            "group flex items-center gap-1 w-full h-5.5 hover:bg-accent/30 outline-none focus:ring-1 focus:ring-inset focus:ring-ring",
+            isActive && "bg-accent/30"
           )}
-        ></button>
+          style={{
+            paddingLeft: getItemPadding(level, item.type === "file"),
+          }}
+        >
+          {children}
+        </button>
       </ContextMenuTrigger>
+      <ContextMenuContent
+        onCloseAutoFocus={(e) => e.preventDefault()}
+        className="w-64"
+      >
+        {item.type === "folder" && (
+          <>
+            <ContextMenuItem className="text-sm" onClick={onCreateFile}>
+              New File...
+            </ContextMenuItem>
+            <ContextMenuItem className="text-sm" onClick={onCreateFolder}>
+              New Folder...
+            </ContextMenuItem>
+            <ContextMenuSeparator />
+          </>
+        )}
+        <ContextMenuItem className="text-sm" onClick={onRename}>
+          Rename
+          <ContextMenuShortcut>Enter</ContextMenuShortcut>
+        </ContextMenuItem>
+        <ContextMenuItem className="text-sm" onClick={onDelete}>
+          Delete Permanently
+          <ContextMenuShortcut>Backspace</ContextMenuShortcut>
+        </ContextMenuItem>
+      </ContextMenuContent>
     </ContextMenu>
   );
 };

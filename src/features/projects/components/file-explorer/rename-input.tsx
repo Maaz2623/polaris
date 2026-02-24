@@ -2,22 +2,27 @@ import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
 import { ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 import { getItemPadding } from "./constants";
+import { cn } from "@/lib/utils";
 
-export const CreateInput = ({
+export const RenameInput = ({
+  defaultValue,
+  isOpen,
   type,
   level,
   onSubmit,
   onCancel,
 }: {
-  type: "file" | "folder" | null;
+  type: "file" | "folder";
   level: number;
   onSubmit: (name: string) => void;
   onCancel: () => void;
+  defaultValue: string;
+  isOpen?: boolean;
 }) => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(defaultValue);
 
   const handleSubmit = () => {
-    const trimmedValue = value.trim();
+    const trimmedValue = value.trim() || defaultValue;
 
     if (trimmedValue) {
       onSubmit(trimmedValue);
@@ -35,7 +40,12 @@ export const CreateInput = ({
     >
       <div className="flex items-center gap-0.5">
         {type === "folder" && (
-          <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" />
+          <ChevronRightIcon
+            className={cn(
+              "size-4 shrink-0 text-muted-foreground",
+              isOpen && "rotate-90"
+            )}
+          />
         )}
         {type === "file" && (
           <FileIcon fileName={value} autoAssign className="size-4" />
@@ -57,6 +67,19 @@ export const CreateInput = ({
           }
           if (e.key === "Escape") {
             onCancel();
+          }
+        }}
+        onFocus={(e) => {
+          if (type === "folder") {
+            e.currentTarget.select();
+          } else {
+            const value = e.currentTarget.value;
+            const lastDotIndex = value.lastIndexOf(".");
+            if (lastDotIndex > 0) {
+              e.currentTarget.setSelectionRange(0, lastDotIndex);
+            } else {
+              e.currentTarget.select();
+            }
           }
         }}
       />
